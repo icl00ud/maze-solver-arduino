@@ -1,14 +1,40 @@
 #include <SharpIR.h> // Sensor da frente (Sharp IR GP2Y0A21YK0F).
 #include <QTRSensors.h> // Sensor de linha (QTR-8RC).
 
+
+// Portas e modelo do sensor SharpIR
 #define ir A0; // IR pino de onde o sensor está na placa ------- tem que ser analógico.
 #define model 1080; // Modelo do sensor que é um SHARP 2Y0A21.
+
+
+
+
+
+// Portas drive do motor
+#define motorEsquerda 2; // Motor esquerdo. Ajustar na hora de montar o robô.
+#define motorDireita 3; // Motor direito. Ajustar na hora de montar o robô.
+
+
+
+
+// Definições gerais
+#define s 12; // Altera aqui quantos segundos quer que o robô funcione.
+#define RUNTIME s*1000 // Quantos segundos o robô vai andar.
+
+
+
+
 
 SharpIR sharpIR(ir, model); // Cria o objeto do sensor de distância.
 QTRSensors qtr; // Cria o objeto do sensor de linha.
 
 const uint8_t numSensors = 2; // Número de sensores. No caso, 2.
 uint16_t sensorValues[numSensors]; // Valores dos sensores.
+
+
+
+
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -51,6 +77,12 @@ void setup() {
   // --------------------------------- Fim da configuração dos sensores de linha QTRSensors ---------------------------------
 
 }
+
+
+
+
+
+
   
 void loop() {
   // put your main code here, to run repeatedly:
@@ -90,7 +122,58 @@ void loop() {
   // ---------------------------------------- Fim da configuração do sensor de linha QTRSensors ----------------------------------------
 }
 
+
+
+
+
 // ------------------------------------------ Funções do motor ------------------------------------------
+
+  void controleMotor(int velocidadeEsquerdo, int velocidadeDireito) {
+    // Função para controlar a velocidade dos motores.
+
+    pinMode(motorEsquerda, OUTPUT); // Configura o pino do motor esquerdo como saída.
+    pinMode(motorDireita, OUTPUT); // Configura o pino do motor direito como saída.
+
+    // Velocidade do motor esquerdo
+    if (velocidadeEsquerdo >= 0) {
+      digitalWrite(motorEsquerda, velocidadeEsquerdo);
+    } else {
+      digitalWrite(motorEsquerda, 0);
+    }
+
+    // Velocidade do motor direito
+    if (velocidadeDireito >= 0) {
+      digitalWrite(motorDireita, velocidadeDireito);
+    } else {
+      digitalWrite(motorDireita, 0);
+    }
+  }
+
+  void opcaoMotor(int opcao) {
+    // Função para controlar a direção dos motores.
+
+    switch (opcao) {
+      case 1: // Frente
+        controleMotor(255, 255);
+        break;
+
+      case 2: // Trás
+        controleMotor(-255, -255);
+        break;
+
+      case 3: // Direita
+        controleMotor(255, -255);
+        break;
+
+      case 4: // Esquerda
+        controleMotor(-255, 255);
+        break;
+
+      case 5: // Parar
+        controleMotor(0, 0);
+        break;
+    }
+  }
 
   void PraFrente() {
     // Função para o robô ir para frente.
@@ -120,4 +203,23 @@ void loop() {
     // só arrumar conforme for botando os motores
   }
 
+  bool pararMotor(long runTime, long currentTime) {
+    // Função para parar o robô.
+    if (currentTime >= runTime) {
+      digitalWrite(2, LOW);
+      digitalWrite(3, LOW);
+      return true;
+    }
+  }
+
 // ------------------------------------------ Fim das funções do motor ------------------------------------------
+
+// ------------------------------------------ Lógica do resolvedor de labirinto ------------------------------------------
+
+  void labirinto() {
+    // Função para o robô resolver o labirinto.
+
+    // Aqui vai o código do algorítimo para resolver o labirinto.
+
+    
+  }
