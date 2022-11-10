@@ -2,25 +2,29 @@
 #include <QTRSensors.h> // Sensor de linha (QTR-8RC).
 
 
+
 // Portas e modelo do sensor SharpIR
 #define ir A0; // IR pino de onde o sensor está na placa ------- tem que ser analógico.
 #define model 1080; // Modelo do sensor que é um SHARP 2Y0A21.
 
 
 
-
-
 // Portas drive do motor
-#define motorEsquerda 2; // Motor esquerdo. Ajustar na hora de montar o robô.
-#define motorDireita 3; // Motor direito. Ajustar na hora de montar o robô.
+#define PININ1 2
+#define PININ2 4
+#define PININ3 5
+#define PININ4 7
+#define PINENA 3
+#define PINENB 6
 
-
-
+// Velocidades
+#define SPEED0 255    // Valor de 0 a 255 para velocidade
+#define SPEED1 255    // Valor de 0 a 255 para velocidade
 
 // Definições gerais
 #define s 12; // Altera aqui quantos segundos quer que o robô funcione.
 #define RUNTIME s*1000 // Quantos segundos o robô vai andar.
-
+#define TRESHOLD 750 // Referência para linha branca
 
 
 
@@ -47,37 +51,23 @@ void setup() {
 
     delay(500);
     pinMode(LED_BUILTIN, OUTPUT);
+
     digitalWrite(LED_BUILTIN, HIGH); // Liga o led do arduino dizendo que entrou no modo de calibração do sensor de linha.
 
     for (uint16_t i = 0; i < 400; i++)
     {
       qtr.calibrate(); // Calibra o sensor de linha
     }
+
     digitalWrite(LED_BUILTIN, LOW); // Desliga o led do arduino dizendo que saiu do modo de calibração do sensor de linha.
     
     Serial.begin(9600);
-    // Aqui printa os valores mínimos mensurados quando emissores estão em contato com a linha.
-    for (uint8_t i = 0; i < numSensors; i++)
-    {
-      Serial.print(qtr.calibrationOn.minimum[i]);
-      Serial.print(" | ");
-    }
-    Serial.println();
 
-    // Aqui printa os valores máximos mensurados quando emissores estão em contato com a linha.
-    for (uint8_t i = 0; i < numSensors; i++)
-    {
-      Serial.print(qtr.calibrationOn.maximum[i]);
-      Serial.print(" | ");
-    }
-    Serial.println();
-    delay(1000);
-  
   // Usei como referência https://github.com/pololu/qtr-sensors-arduino
   // --------------------------------- Fim da configuração dos sensores de linha QTRSensors ---------------------------------
-
 }
 
+  
 
 
 
@@ -89,19 +79,12 @@ void loop() {
 
   // ------------------------------------------ Configuração do sensor SharpIR ------------------------------------------
 
-
-    unsigned long pepe1 = millis();
-
     int dis = sharpIR.distance(); // Aqui retorna a distância do objeto a frente em cm. O valor máximo é 80cm.
     Serial.print("Distância: "); // Printa a distância no monitor serial.
     Serial.print(dis); // Provavelmente usaremos isso pra fazer o algorítimo.
 
-    unsigned long pepe2 = millis(); - pepe1; // Nos dá o tempo que levou para medir a distância do objeto a frente.
-    Serial.print(" Tempo (ms): ");
-    Serial.println(pepe2);
-
-
   // Usei como referência https://github.com/guillaume-rico/SharpIR
+  
   // --------------------------------------- Fim da configuração do sensor SharpIR ---------------------------------------
 
   // ------------------------------------------ Configuração do sensor de linha QTRSensors ------------------------------------------
@@ -114,12 +97,13 @@ void loop() {
       Serial.print(sensorValues[i]);
       Serial.print(" \t ");
     }
+    Serial.println("Position: ??");
     Serial.println(position);
-
-    delay(500);
 
     // Usei como referência https://github.com/pololu/qtr-sensors-arduino
   // ---------------------------------------- Fim da configuração do sensor de linha QTRSensors ----------------------------------------
+
+  Labirinto();
 }
 
 
@@ -131,42 +115,64 @@ void loop() {
   void controleMotor(int velocidadeEsquerdo, int velocidadeDireito) {
     // Função para controlar a velocidade dos motores.
 
-    pinMode(motorEsquerda, OUTPUT); // Configura o pino do motor esquerdo como saída.
-    pinMode(motorDireita, OUTPUT); // Configura o pino do motor direito como saída.
+    // Definições das portas digitais 
+    pinMode(PININ1, OUTPUT); 
+    pinMode(PININ2, OUTPUT); 
+    pinMode(PININ3, OUTPUT); 
+    pinMode(PININ4, OUTPUT); 
+    pinMode(PINENA, OUTPUT); 
+    pinMode(PINENB, OUTPUT); 
 
-    // Velocidade do motor esquerdo
-    if (velocidadeEsquerdo >= 0) {
-      digitalWrite(motorEsquerda, velocidadeEsquerdo);
-    } else {
-      digitalWrite(motorEsquerda, 0);
+    // Ajustes motor da esquerda 
+
+    if (speedLeft < 0)
+    { 
+      speedLeft = -speedLeft; 
+      digitalWrite (PININ1, HIGH); 
+      digitalWrite (PININ2, LOW); 
+    }
+    else
+    { 
+    digitalWrite (PININ1, LOW); 
+    digitalWrite (PININ2, HIGH); 
     }
 
-    // Velocidade do motor direito
-    if (velocidadeDireito >= 0) {
-      digitalWrite(motorDireita, velocidadeDireito);
-    } else {
-      digitalWrite(motorDireita, 0);
+    // Ajustes motor da direita 
+
+    if(speedRight < 0)
+    { 
+    speedRight = -speedRight; 
+    digitalWrite (PININ3, HIGH); 
+    digitalWrite (PININ4, LOW); 
     }
+    else
+    { 
+    digitalWrite (PININ3, LOW); 
+    digitalWrite (PININ4, HIGH); 
+    }
+ 
+    analogWrite (PINENA, velocidadeEsquerdo); 
+    analogWrite (PINENB, velocidadeDireito);
   }
 
-  void opcaoMotor(int opcao) {
+  void opcaoMotor(int opcao, int velocidadeEsquerdo, int velocidadeDireito) {
     // Função para controlar a direção dos motores.
 
     switch (opcao) {
       case 1: // Frente
-        controleMotor(255, 255);
+        controleMotor(velocidadeEsquerdo, velocidadeDireito);
         break;
 
       case 2: // Trás
-        controleMotor(-255, -255);
+        controleMotor(-velocidadeEsquerdo, -velocidadeDireito);
         break;
 
       case 3: // Direita
-        controleMotor(255, -255);
+        controleMotor(velocidadeEsquerdo, -velocidadeDireito);
         break;
 
       case 4: // Esquerda
-        controleMotor(-255, 255);
+        controleMotor(-velocidadeEsquerdo, velocidadeDireito);
         break;
 
       case 5: // Parar
@@ -177,37 +183,28 @@ void loop() {
 
   void PraFrente() {
     // Função para o robô ir para frente.
-    digitalWrite(2, HIGH);
-    digitalWrite(3, LOW);
-    // só arrumar conforme for botando os motores
+    opcaomotor(1, SPEED0, SPEED0);
   }
 
   void PraEsquerda() {
     // Função para o robô ir para esquerda.
-    digitalWrite(2, HIGH);
-    digitalWrite(3, LOW);
-    // só arrumar conforme for botando os motores
+    opcaomotor(4, SPEED0, SPEED1);
   }
 
   void PraDireita() {
     // Função para o robô ir para direita.
-    digitalWrite(2, HIGH);
-    digitalWrite(3, LOW);
-    // só arrumar conforme for botando os motores
+    opcaomotor(3, SPEED1, SPEED0);
   }
 
   void PraTras() {
     // Função para o robô ir para trás.
-    digitalWrite(2, HIGH);
-    digitalWrite(3, LOW);
-    // só arrumar conforme for botando os motores
+    opcaomotor(2, 0, 0);
   }
 
   bool pararMotor(long runTime, long currentTime) {
     // Função para parar o robô.
     if (currentTime >= runTime) {
-      digitalWrite(2, LOW);
-      digitalWrite(3, LOW);
+      opcaomotor(5);
       return true;
     }
   }
@@ -216,10 +213,31 @@ void loop() {
 
 // ------------------------------------------ Lógica do resolvedor de labirinto ------------------------------------------
 
-  void labirinto() {
+  void Labirinto() {
     // Função para o robô resolver o labirinto.
 
-    // Aqui vai o código do algorítimo para resolver o labirinto.
+    if (sensorValues[0] <= TRESHOLD && sensorValues[1] <= TRESHOLD) { 
+      PraFrente();
+      // leitura do sensor (0 1) 
 
-    
+    } else if ( sensorValues[0] >= TRESHOLD && sensorValues[1] <= TRESHOLD) { 
+      PraDireita();
+      // leitura do sensor (1 0) 
+
+    } else if ( sensorValues[0] <= TRESHOLD && sensorValues[1] >= TRESHOLD ) { 
+      PraEsquerda();
+      // leitura do sensor (0 0) 
+     
+    } else if (sensorValues[0] >= TRESHOLD && sensorValues[1] >= TRESHOLD ) { 
+      // SEGUE EM FRENTE
+      PraFrente();
+    } 
   }
+
+// ------------------------------------------ Fim Lógica do resolvedor de labirinto ------------------------------------------
+
+
+
+
+
+
