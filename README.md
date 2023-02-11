@@ -2,7 +2,7 @@
 
 Este é um projeto de faculdade que visa criar um código para resolver um labirinto usando um microcontrolador [Arduino](https://www.arduino.cc/). O objetivo é controlar um robô para percorrer o labirinto de maneira automática, encontrar a saída e relatar o percurso que foi seguido.
 
-## Matérias necessárias
+## Materiais necessários
 
 - Arduino (qualquer modelo compatível)
 - Sensor de distância SHARP 2Y0A21
