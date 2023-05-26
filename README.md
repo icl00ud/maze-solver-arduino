@@ -1,6 +1,6 @@
 # Arduino Maze Solver
 
-Este é um projeto de faculdade que visa criar um código para resolver um labirinto usando um microcontrolador [Arduino](https://www.arduino.cc/). O objetivo é controlar um robô para percorrer o labirinto de maneira automática, encontrar a saída e relatar o percurso que foi seguido.
+Este é um projeto que visa criar um código para resolver um labirinto usando um microcontrolador [Arduino](https://www.arduino.cc/). O objetivo é controlar um robô para percorrer o labirinto de maneira automática, encontrar a saída e relatar o percurso que foi seguido.
 
 ## Materiais necessários
 
