@@ -1,30 +1,30 @@
 # Arduino Maze Solver
 
-Este é um projeto que visa criar um código para resolver um labirinto usando um microcontrolador [Arduino](https://www.arduino.cc/). O objetivo é controlar um robô para percorrer o labirinto de maneira automática, encontrar a saída e relatar o percurso que foi seguido.
+This project aims to create a code to solve a maze using an Arduino microcontroller. The goal is to control a robot to navigate the maze automatically, find the exit, and report the path followed.
 
-## Materiais necessários
+## Required Materials
 
-- Arduino (qualquer modelo compatível)
-- Sensor de distância SHARP 2Y0A21
-- Sensores de linha QTR
-- Motores DC
-- Driver de motor L298N ou similar
-- Jumpers e placa de prototipagem
+- Arduino (any compatible model)
+- SHARP 2Y0A21 distance sensor
+- QTR line sensors
+- DC engines
+- L298N motor driver or similar
+- Jumpers and breadboard
 
-## Instruções de montagem
+## Assembly Instructions
 
-1. Conecte o sensor de distância SHARP 2Y0A21 aos pinos de entrada do Arduino.
-2. Conecte os sensores de linha QTR aos pinos de entrada do Arduino.
-3. Conecte os motores DC ao driver de motor e, em seguida, conecte o driver de motor aos pinos de saída do Arduino.
-4. Monte o circuito em uma placa de prototipagem ou em uma placa personalizada.
+1. Connect the SHARP 2Y0A21 distance sensor to the Arduino input pins.
+2. Connect the QTR line sensors to the Arduino input pins.
+3. Connect the DC motors to the motor driver, then connect the motor driver to the Arduino output pins.
+4. Assemble the circuit on a breadboard or a custom PCB.
 
-## Instruções de uso
+## Usage Instructions
 
-1. Faça o upload do código para o Arduino.
-2. Inicie o programa.
-3. O robô começará a percorrer o labirinto automaticamente, utilizando o sensor de distância e os sensores de linha para detectar obstáculos e encontrar a saída.
-4. O percurso seguido será relatado.
+1. Upload the code to the Arduino.
+2. Start the program.
+3. The robot will begin navigating the maze automatically, using the distance sensor and line sensors to detect obstacles and find the exit.
+4. The followed path will be reported.
 
-## Considerações finais
+## Final Considerations
 
-Este projeto é apenas um exemplo de como resolver um labirinto usando um microcontrolador Arduino e diferentes sensores. A implementação específica pode variar dependendo das restrições de hardware e software. Sinta-se à vontade para fazer modificações e melhorias no código para atender às suas necessidades.
+This project is just an example of how to solve a maze using an Arduino microcontroller and different sensors. The specific implementation may vary depending on hardware and software constraints. Feel free to make modifications and improvements to the code to suit your needs.
